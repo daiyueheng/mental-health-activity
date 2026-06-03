@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=2.0">
+  <title>心理健康课堂活动生成智能体</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(145deg, #e9f3e6 0%, #d4e9f7 100%);
+      font-family: 'Segoe UI', 'Roboto', 'Noto Sans', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem 1rem;
+      margin: 0;
+    }
+
+    /* 主卡片容器：清新、柔和、适合投屏的大卡片 */
+    .main-container {
+      max-width: 1100px;
+      width: 100%;
+      background: rgba(255, 255, 250, 0.85);
+      backdrop-filter: blur(20px);
+      background: #fefef7;
+      border-radius: 2.5rem;
+      box-shadow: 0 25px 45px rgba(84, 110, 122, 0.15), 0 10px 20px rgba(0, 40, 30, 0.08);
+      padding: 2rem 2.2rem;
+      border: 1px solid rgba(130, 180, 140, 0.3);
+    }
+
+    /* 头部区域 */
+    .header {
+      text-align: center;
+      margin-bottom: 2.2rem;
+    }
+
+    .header h1 {
+      font-size: 2.3rem;
+      font-weight: 600;
+      color: #2d5e4a;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 4px rgba(255,255,245,0.8);
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: #4a6b5f;
+      background: #e2f0e6;
+      display: inline-block;
+      padding: 0.4rem 1.8rem;
+      border-radius: 2rem;
+      font-weight: 400;
+      backdrop-filter: blur(5px);
+    }
+
+    /* 卡片式布局通用设计 */
+    .card {
+      background: #ffffff;
+      border-radius: 1.8rem;
+      padding: 1.8rem 1.8rem;
+      margin-bottom: 1.8rem;
+      box-shadow: 0 8px 18px rgba(75, 100, 90, 0.08);
+      border: 1px solid #ddebe0;
+      transition: all 0.2s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 12px 24px rgba(70, 110, 90, 0.12);
+    }
+
+    .card-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #2c4b3b;
+      margin-bottom: 1.3rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px dashed #bcd9c8;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .grid-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.2rem 1.8rem;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .field-group.full-width {
+      grid-column: span 2;
+    }
+
+    label {
+      font-weight: 500;
+      color: #345b47;
+      font-size: 0.9rem;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    select, input, textarea {
+      background: #f9fcf9;
+      border: 1px solid #c8ddcd;
+      border-radius: 1rem;
+      padding: 0.7rem 1rem;
+      font-size: 0.95rem;
+      color: #1f3b2c;
+      outline: none;
+      transition: 0.2s;
+      font-family: inherit;
+      resize: vertical;
+      background: #fbfefb;
+    }
+
+    select:focus, input:focus, textarea:focus {
+      border-color: #7aac8a;
+      box-shadow: 0 0 0 3px rgba(110, 165, 120, 0.25);
+      background: #ffffff;
+    }
+
+    textarea {
+      min-height: 80px;
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 1.8rem 0 1rem;
+      align-items: center;
+    }
+
+    .btn {
+      background: #e3efe6;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 2.5rem;
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+      color: #1e4630;
+      cursor: pointer;
+      background: #d4e8da;
+      transition: all 0.25s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      border: 1px solid transparent;
+      box-shadow: 0 4px 8px rgba(90, 120, 90, 0.1);
+    }
+
+    .btn:hover {
+      background: #c0ddc9;
+      border-color: #86aa8f;
+      box-shadow: 0 8px 14px rgba(70, 110, 70, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 6px rgba(70, 110, 70, 0.15);
+    }
+
+    .btn-primary {
+      background: #9bc4a7;
+      color: #0a2e1b;
+      font-weight: 700;
+      box-shadow: 0 6px 12px rgba(70, 110, 70, 0.2);
+      border: 1px solid #6f9b7a;
+    }
+
+    .btn-primary:hover {
+      background: #8ab796;
+    }
+
+    .btn-outline {
+      background: #f5faf6;
+      border: 1px solid #b0cfb8;
+    }
+
+    .btn-copy {
+      background: #e7f3ec;
+      border: 1px solid #b4cfbc;
+    }
+
+    .output-area {
+      background: #fafdf9;
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      margin-top: 0.8rem;
+    }
+
+    .result-block {
+      background: #ffffff;
+      border-left: 6px solid #86b39b;
+      padding: 1rem 1.4rem;
+      margin-bottom: 1rem;
+      border-radius: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .result-block h3 {
+      font-size: 1.1rem;
+      color: #1d4a32;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .result-block p, .result-block ul {
+      color: #2c4035;
+      line-height: 1.6;
+      margin-left: 0.2rem;
+    }
+
+    .result-block ul {
+      padding-left: 1.3rem;
+    }
+
+    .ethics-box {
+      background: #f3f9f4;
+      border-radius: 1.2rem;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0 0.2rem;
+      border: 1px solid #c8e0ce;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem 1.2rem;
+      font-size: 0.9rem;
+      color: #2b5a3b;
+      align-items: center;
+    }
+
+    .ethics-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .ethics-item i {
+      font-style: normal;
+      font-size: 1.2rem;
+      color: #528a64;
+    }
+
+    hr {
+      border: 0.5px solid #d2e5d8;
+      margin: 1.2rem 0 0.8rem;
+    }
+
+    .copy-message {
+      color: #2d6740;
+      font-weight: 500;
+      margin-left: 1rem;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    @media (max-width: 650px) {
+      .main-container {
+        padding: 1.5rem;
+      }
+      .grid-form {
+        grid-template-columns: 1fr;
+      }
+      .field-group.full-width {
+        grid-column: span 1;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="main-container">
+  
+  <!-- 头部标题区 -->
+  <div class="header">
+    <h1>🧠 心理健康课堂活动生成智能体</h1>
+    <div class="subtitle">✨ 帮助教师快速生成安全、互动、可操作的心理健康课堂活动</div>
+  </div>
+
+  <!-- 输入卡片 -->
+  <div class="card">
+    <div class="card-title"><span>📋 活动参数设置</span></div>
+    <div class="grid-form">
+      <div class="field-group">
+        <label>🎒 学段</label>
+        <select id="gradeSelect">
+          <option value="小学低年级">小学低年级</option>
+          <option value="小学高年级">小学高年级</option>
+          <option value="初中" selected>初中</option>
+          <option value="高中">高中</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>📌 活动主题</label>
+        <select id="topicSelect">
+          <option value="认识情绪">认识情绪</option>
+          <option value="情绪管理" selected>情绪管理</option>
+          <option value="人际交往">人际交往</option>
+          <option value="自我认识">自我认识</option>
+          <option value="考试压力">考试压力</option>
+          <option value="时间管理">时间管理</option>
+          <option value="积极心理品质">积极心理品质</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>👥 课堂人数</label>
+        <input type="number" id="studentCount" placeholder="例如 30" value="36" min="1" max="80">
+      </div>
+      <div class="field-group">
+        <label>⏱️ 活动时长</label>
+        <select id="durationSelect">
+          <option value="10分钟">10分钟</option>
+          <option value="15分钟" selected>15分钟</option>
+          <option value="20分钟">20分钟</option>
+          <option value="30分钟">30分钟</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>🎭 活动形式</label>
+        <select id="formatSelect">
+          <option value="热身游戏">热身游戏</option>
+          <option value="情境讨论" selected>情境讨论</option>
+          <option value="小组合作">小组合作</option>
+          <option value="角色扮演">角色扮演</option>
+          <option value="表达分享">表达分享</option>
+          <option value="行动计划">行动计划</option>
+        </select>
+      </div>
+      <div class="field-group full-width">
+        <label>🎯 教学目标 <span style="font-weight:normal; color:#5b7b64;">(必填)</span></label>
+        <textarea id="teachingGoal" placeholder="例如：学生能识别至少三种情绪，并学会用适当方式表达感受...">学生能够理解情绪管理的重要性，学会两种调节情绪的方法。</textarea>
+      </div>
+      <div class="field-group full-width">
+        <label>📝 特殊要求 <span style="font-weight:normal; color:#6a7b6c;">(选填)</span></label>
+        <textarea id="specialRequest" placeholder="例如：需要无桌椅活动、适合害羞学生、融入绘画元素...">希望活动中包含小组讨论环节，避免竞争性过强。</textarea>
+      </div>
+    </div>
+
+    <!-- 按钮组 -->
+    <div class="button-group">
+      <button class="btn btn-primary" id="generateBtn">✨ 生成活动方案</button>
+      <button class="btn btn-outline" id="clearBtn">🧹 清空内容</button>
+      <button class="btn btn-copy" id="copyBtn">📋 复制结果</button>
+      <span class="copy-message" id="copyMessage">✅ 已复制到剪贴板</span>
+    </div>
+  </div>
+
+  <!-- 输出结果卡片 -->
+  <div class="card" id="outputCard">
+    <div class="card-title"><span>📄 生成的活动方案</span></div>
+    <div id="outputContainer" class="output-area">
+      <p style="color: #7a8d7e; text-align: center; padding: 1.2rem;">👆 请填写参数并点击“生成活动方案”</p>
+    </div>
+    
+    <!-- 伦理与安全边界提醒（始终显示） -->
+    <div class="ethics-box">
+      <div class="ethics-item"><i>🛡️</i> 活动不用于心理诊断</div>
+      <div class="ethics-item"><i>🔒</i> 不要求学生公开讲述创伤经历</div>
+      <div class="ethics-item"><i>🙅</i> 不强迫学生分享个人隐私</div>
+      <div class="ethics-item"><i>💬</i> 关注学生情绪反应，必要时课后个别支持</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // 获取DOM元素
+    const gradeSelect = document.getElementById('gradeSelect');
+    const topicSelect = document.getElementById('topicSelect');
+    const studentCountInput = document.getElementById('studentCount');
+    const durationSelect = document.getElementById('durationSelect');
+    const formatSelect = document.getElementById('formatSelect');
+    const teachingGoalTextarea = document.getElementById('teachingGoal');
+    const specialRequestTextarea = document.getElementById('specialRequest');
+    
+    const generateBtn = document.getElementById('generateBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const outputContainer = document.getElementById('outputContainer');
+    const copyMessage = document.getElementById('copyMessage');
+
+    // 辅助函数：获取当前选中的文本
+    function getSelectedText(selectElement) {
+      return selectElement.options[selectElement.selectedIndex].text;
+    }
+
+    // 核心生成逻辑（模拟智能体结果）
+    function generateActivityPlan() {
+      const grade = getSelectedText(gradeSelect);
+      const topic = getSelectedText(topicSelect);
+      const studentCount = studentCountInput.value.trim();
+      const duration = getSelectedText(durationSelect);
+      const format = getSelectedText(formatSelect);
+      const teachingGoal = teachingGoalTextarea.value.trim();
+      const specialRequest = specialRequestTextarea.value.trim();
+
+      // 校验教学目标必填
+      if (!teachingGoal) {
+        alert('⚠️ 请填写“教学目标”，以便生成针对性的活动方案。');
+        teachingGoalTextarea.focus();
+        return null; // 返回null表示不继续
+      }
+
+      // 根据人数调整表述
+      const countText = studentCount ? `${studentCount}人` : '全班';
+      
+      // 动态生成活动名称
+      const activityName = `《${topic}探索营》- ${format}·${grade}版`;
+      
+      // 根据主题生成针对性目标描述
+      let specificGoal = teachingGoal;
+      if (topic.includes('情绪')) {
+        specificGoal = `聚焦${topic}：${teachingGoal}`;
+      } else if (topic.includes('人际')) {
+        specificGoal = `提升人际互动：${teachingGoal}`;
+      } else {
+        specificGoal = teachingGoal;
+      }
+
+      // 材料列表
+      const materialList = [
+        '彩色便利贴或情绪卡片',
+        '白板/黑板及马克笔',
+        '轻柔背景音乐(可选)',
+        '活动任务单(每人一份)',
+        '计时器或沙漏'
+      ];
+      
+      // 根据形式添加特殊材料
+      if (format === '角色扮演') {
+        materialList.push('简单角色提示卡或头饰');
+      } else if (format === '表达分享') {
+        materialList.push('“发言棒”或传递物(确保轮流发言)');
+      } else if (format === '小组合作') {
+        materialList.push('小组讨论记录纸');
+      }
+
+      // 活动步骤 (根据形式动态调整)
+      const steps = [];
+      steps.push(`1. 暖身引入 (${Math.floor(parseInt(duration) * 0.2)}分钟)：教师通过简短故事或图片引出“${topic}”主题。`);
+      
+      if (format === '热身游戏') {
+        steps.push(`2. 游戏互动：开展与${topic}相关的肢体/反应游戏，活跃气氛。`);
+        steps.push(`3. 体验分享：邀请学生用关键词表达感受。`);
+        steps.push(`4. 教师小结并链接到日常情绪。`);
+      } else if (format === '情境讨论') {
+        steps.push(`2. 情境呈现：展示贴近${grade}生活的${topic}相关情境（文字或图片）。`);
+        steps.push(`3. 小组讨论：分组探讨情境中的感受与应对方式。`);
+        steps.push(`4. 全班交流：各组代表发言，教师板书关键词。`);
+      } else if (format === '小组合作') {
+        steps.push(`2. 任务布置：每组领取与${topic}相关的任务卡（如制作情绪调节海报）。`);
+        steps.push(`3. 合作探究：小组合作完成作品，教师巡回支持。`);
+        steps.push(`4. 成果展示与互评。`);
+      } else if (format === '角色扮演') {
+        steps.push(`2. 角色说明：介绍简单情境，学生自愿选择角色。`);
+        steps.push(`3. 扮演与观察：学生进行2-3分钟扮演，其他同学观察。`);
+        steps.push(`4. 讨论反思：围绕感受与发现进行非批判讨论。`);
+      } else if (format === '表达分享') {
+        steps.push(`2. 个人反思：学生安静书写或绘画与“${topic}”相关的个人体验。`);
+        steps.push(`3. 轮流分享：使用发言棒，自愿分享感受（不强制）。`);
+        steps.push(`4. 教师归纳共同点并给予肯定。`);
+      } else if (format === '行动计划') {
+        steps.push(`2. 目标设定：引导学生制定个人“${topic}”微小行动计划。`);
+        steps.push(`3. 伙伴互助：两人一组分享计划并互相鼓励。`);
+        steps.push(`4. 承诺仪式：全班共同做出积极承诺。`);
+      }
+      
+      steps.push(`5. 总结升华 (${Math.floor(parseInt(duration) * 0.15)}分钟)：回顾核心要点，强化积极体验。`);
+
+      // 教师引导语
+      const teacherGuide = `“同学们，今天我们将一起走进‘${topic}’的世界。请大家带着开放和尊重的态度参与，没有标准答案，每个人的感受都值得被听见。如果你暂时不想分享，也可以安静地思考。”`;
+
+      // 小组讨论问题 (根据主题生成)
+      const discussionQuestions = [
+        `1. 关于“${topic}”，你曾经有过哪些印象深刻的经历？（自愿分享）`,
+        `2. 当遇到相关情境时，你的身体和心里有什么感觉？`,
+        `3. 你觉得哪些方法可以帮助自己或他人更好地面对？`,
+        `4. 在今天活动中，你学到了什么可以带回到生活中？`
+      ];
+
+      // 活动总结语
+      const summary = `今天我们通过${format}的方式，一起探索了“${topic}”。老师看到大家真诚的参与和思考。请记住，心理健康就像照顾花园，需要耐心和练习。如果你有更多感受，欢迎课后和老师聊聊。`;
+
+      // 注意事项（基础+动态）
+      const notes = [
+        '确保活动环境安全、包容，尊重每位学生的参与意愿。',
+        '教师需提前了解学生特殊情况（如近期重大事件），避免触发。',
+        '活动过程中关注学生情绪变化，及时给予安抚或调整。'
+      ];
+      
+      // 根据活动形式增加隐私提醒
+      if (format === '表达分享' || format === '角色扮演') {
+        notes.push('⚠️ 特别提醒：本活动涉及分享或扮演，教师需明确告知学生“不暴露个人隐私，不讲述创伤细节”，可用虚拟情景替代真实经历。');
+      }
+      
+      // 如果特殊要求里有提到“害羞”或“敏感”，追加提醒
+      if (specialRequest && (specialRequest.includes('害羞') || specialRequest.includes('敏感') || specialRequest.includes('隐私'))) {
+        notes.push('💡 根据您的特殊要求，请进一步降低分享压力，允许学生用书写或匿名方式表达。');
+      }
+      
+      notes.push('活动不用于心理诊断，如发现学生可能需要进一步支持，请课后个别关怀或转介。');
+
+      // 构建结果对象
+      return {
+        activityName,
+        applicable: `${grade} · 约${countText}`,
+        goal: specificGoal,
+        materials: materialList,
+        steps: steps,
+        teacherGuide,
+        discussionQuestions,
+        summary,
+        notes
+      };
+    }
+
+    // 渲染结果到界面
+    function renderResult(plan) {
+      if (!plan) {
+        outputContainer.innerHTML = `<p style="color: #7a8d7e; text-align: center; padding: 1.2rem;">⚠️ 请先填写必要信息并生成方案</p>`;
+        return;
+      }
+
+      const materialsHtml = plan.materials.map(m => `<li>${m}</li>`).join('');
+      const stepsHtml = plan.steps.map(s => `<li>${s}</li>`).join('');
+      const questionsHtml = plan.discussionQuestions.map(q => `<li>${q}</li>`).join('');
+      const notesHtml = plan.notes.map(n => `<li>${n}</li>`).join('');
+
+      const htmlContent = `
+        <div class="result-block">
+          <h3>🎯 活动名称</h3>
+          <p><strong>${escapeHtml(plan.activityName)}</strong></p>
+        </div>
+        <div class="result-block">
+          <h3>👥 适用对象</h3>
+          <p>${escapeHtml(plan.applicable)}</p>
+        </div>
+        <div class="result-block">
+          <h3>💡 活动目标</h3>
+          <p>${escapeHtml(plan.goal)}</p>
+        </div>
+        <div class="result-block">
+          <h3>📦 所需材料</h3>
+          <ul>${materialsHtml}</ul>
+        </div>
+        <div class="result-block">
+          <h3>🗂️ 活动步骤</h3>
+          <ol style="padding-left:1.3rem;">${stepsHtml}</ol>
+        </div>
+        <div class="result-block">
+          <h3>🗣️ 教师引导语</h3>
+          <p>${escapeHtml(plan.teacherGuide)}</p>
+        </div>
+        <div class="result-block">
+          <h3>❓ 小组讨论问题</h3>
+          <ul>${questionsHtml}</ul>
+        </div>
+        <div class="result-block">
+          <h3>🌈 活动总结语</h3>
+          <p>${escapeHtml(plan.summary)}</p>
+        </div>
+        <div class="result-block">
+          <h3>⚠️ 注意事项</h3>
+          <ul>${notesHtml}</ul>
+        </div>
+      `;
+      outputContainer.innerHTML = htmlContent;
+    }
+
+    // 简单的转义函数，防止XSS
+    function escapeHtml(text) {
+      if (!text) return text;
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // 生成按钮点击事件
+    generateBtn.addEventListener('click', function() {
+      const plan = generateActivityPlan();
+      if (plan) {
+        renderResult(plan);
+        // 轻微滚动到输出区域（适合投屏）
+        document.getElementById('outputCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+
+    // 清空内容：重置所有输入和输出
+    clearBtn.addEventListener('click', function() {
+      // 重置下拉框为默认值（按照预设的默认选项）
+      gradeSelect.value = '初中';
+      topicSelect.value = '情绪管理';
+      studentCountInput.value = '36';
+      durationSelect.value = '15分钟';
+      formatSelect.value = '情境讨论';
+      teachingGoalTextarea.value = '';
+      specialRequestTextarea.value = '';
+      
+      // 清空输出区域
+      outputContainer.innerHTML = `<p style="color: #7a8d7e; text-align: center; padding: 1.2rem;">👆 请填写参数并点击“生成活动方案”</p>`;
+      
+      // 隐藏复制消息
+      copyMessage.style.opacity = '0';
+      
+      // 可选：让教学目标获得焦点提示
+      teachingGoalTextarea.focus();
+    });
+
+    // 复制结果功能
+    copyBtn.addEventListener('click', function() {
+      const outputText = outputContainer.innerText.trim();
+      if (!outputText || outputText.includes('请填写参数') || outputText.includes('请先填写必要信息')) {
+        alert('📭 暂无活动方案可复制，请先生成方案。');
+        return;
+      }
+      
+      // 使用现代 clipboard API
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(outputText).then(() => {
+          showCopySuccess();
+        }).catch(() => {
+          fallbackCopy(outputText);
+        });
+      } else {
+        fallbackCopy(outputText);
+      }
+    });
+
+    function fallbackCopy(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showCopySuccess();
+      } catch (err) {
+        alert('❌ 复制失败，请手动复制。');
+      }
+      document.body.removeChild(textarea);
+    }
+
+    function showCopySuccess() {
+      copyMessage.style.opacity = '1';
+      setTimeout(() => {
+        copyMessage.style.opacity = '0';
+      }, 2000);
+    }
+
+    // 初始化：设置一个默认示例方案（方便演示，但需教学目标已填写）
+    // 检查默认教学目标是否为空，如果不为空则自动生成一次（提升体验）
+    window.addEventListener('load', function() {
+      if (teachingGoalTextarea.value.trim() !== '') {
+        // 延迟一点点生成，确保所有DOM就绪
+        setTimeout(() => {
+          const initialPlan = generateActivityPlan();
+          if (initialPlan) {
+            renderResult(initialPlan);
+          }
+        }, 10);
+      } else {
+        // 保持占位提示
+        outputContainer.innerHTML = `<p style="color: #7a8d7e; text-align: center; padding: 1.2rem;">👆 请填写参数并点击“生成活动方案”</p>`;
+      }
+    });
+
+  })();
+</script>
+</body>
+</html>
